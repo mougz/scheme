@@ -28,6 +28,9 @@ object sfs_read_atom( char *input, uint *here );
 object sfs_read_pair( char *stream, uint *i );
 
 char * extraire_chaine(char * chaine, char* str,int k);
+
+void insert_char(char* string,const char* insert, int pos);
+
 #ifdef __cplusplus
 }
 #endif

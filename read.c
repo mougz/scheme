@@ -419,9 +419,10 @@ object sfs_read_atom( char *input, uint *here ) {
 object sfs_read_pair( char *stream, uint *here ) {
 
     object o_pair= make_object(SFS_PAIR) ;
-    
-
     o_pair->this.pair.car = sfs_read(stream, here);
+    
+    insert_char ( stream, "(", (*here) );
+
     o_pair->this.pair.cdr = sfs_read(stream, here);
     
     return o_pair;
@@ -466,7 +467,17 @@ char * extraire_chaine(char * chaine, char* str,int k)
 
 
 
-
+void insert_char(char* string,const char* insert, int pos)
+{    char *tamp = "" ;
+    
+    strncpy(tamp, string, pos);
+    int len = strlen(tamp);
+    strcpy(tamp+len, insert);
+    len += strlen(string);
+    strcpy(tamp+len, string+pos);
+    
+    strcpy(string, tamp);
+}
 
 
 	
