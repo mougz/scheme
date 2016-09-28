@@ -65,8 +65,27 @@ object make_symbol( string chaine )
     
     return t;
 }
-/*object make_pair (void) {
+object make_pair ( object car , object cdr){
 	object t = make_object(SFS_PAIR);
 	t-> this.pair = t;
 	return t;
-}*/	
+}
+
+/* @fn : object car (object o) / object cdr (object o)
+   @brief : renvoie le car/cdr de la paire o
+   @pre : l'objet o doit etre une paire
+*/
+
+object car(object o){
+	if ( o->type != pair){
+		ERROR_MSG("Not a pair !");
+	     }
+	return o->this.pair.car
+}
+
+object cdr(object o){
+	if ( o->type != pair){
+		ERROR_MSG("Not a pair !");
+	     }
+	return o->this.pair.cdr
+]
