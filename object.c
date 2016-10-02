@@ -54,38 +54,40 @@ object make_integer(int number) {
 	object t=make_object(SFS_INTEGER);
 	t->this.integer=number;
 	return t;
+}	
+
+object make_pair(object car,object cdr){
+	object t=make_object(SFS_PAIR);
+	t->this.pair.car=car;
+	t->this.pair.cdr=cdr;
+	return t;
 }
 
-object make_symbol( string chaine )
+object make_symbol( string str )
 {
     
     object t = make_object(SFS_SYMBOL);
     
-    strcpy(t->this.symbol, chaine);
+    strcpy(t->this.symbol, str);
     
     return t;
 }
-object make_pair ( object car , object cdr){
-	object t = make_object(SFS_PAIR);
-	t-> this.pair = t;
-	return t;
-}
 
-/* @fn : object car (object o) / object cdr (object o)
-   @brief : renvoie le car/cdr de la paire o
-   @pre : l'objet o doit etre une paire
-*/
 
 object car(object o){
-	if ( o->type != pair){
+	if ( o->type !=SFS_PAIR)
+	{
 		ERROR_MSG("Not a pair !");
-	     }
-	return o->this.pair.car
+	}
+	return o->this.pair.car;
 }
 
 object cdr(object o){
-	if ( o->type != pair){
+	if ( o->type !=SFS_PAIR)
+	{
 		ERROR_MSG("Not a pair !");
-	     }
-	return o->this.pair.cdr
-]
+	}
+	return o->this.pair.cdr;
+}
+	
+	
