@@ -20,8 +20,26 @@ extern "C" {
 
 object sfs_eval( object );
 
+object caar (object o);
+object cadr (object o);
+object cdar (object o);
+object cddr (object o);
+object caddr (object o);
+
+void set_car(object o, object p);
+
+int isquote (object o);
+int isdefine (object o);
+int is_set (object o);
+int is_if (object o);
+int is_and (object o);
+int is_or (object o);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _EVAL_H_ */
+#endif /* _EVAL_H_ */-
