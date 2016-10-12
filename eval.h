@@ -25,6 +25,7 @@ object cadr (object o);
 object cdar (object o);
 object cddr (object o);
 object caddr (object o);
+object cdddr (object o);
 
 void set_car(object o, object p);
 
@@ -42,4 +43,4 @@ int is_or (object o);
 }
 #endif
 
-#endif /* _EVAL_H_ */-
+#endif /* _EVAL_H_ */

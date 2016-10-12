@@ -33,13 +33,14 @@ void usage_error( char *command ) {
 object nil;
 object vrai;
 object faux;
+int inf;
 
 void init_interpreter ( void ) {
 
     nil      = make_nil();
     vrai=make_bool();
     faux=make_bool();
-
+    inf=make_inf();
 }
 
 int main ( int argc, char *argv[] ) {
@@ -152,6 +153,10 @@ int main ( int argc, char *argv[] ) {
         }
 
         printf( "==> " );
+	if (output->type==SFS_PAIR)
+    	{
+        	printf("(");
+    	}
         sfs_print( output );
         printf( "\n" );
     }
