@@ -13,20 +13,33 @@
 #include <stdio.h>
 
 void sfs_print_atom( object o ) {
-    if ( o->type==SFS_NIL)
-	
-        {
-		printf("()");
-	}
+    if (o->type==SFS_NIL)
+    {
+	printf("()");
+    }
 
     if ( o->type == SFS_SYMBOL)
-	{       
-	 	printf( "%s", o->this.symbol );
-	}
+    {       
+	 printf( "%s", o->this.symbol );
+    }
 
     if (o->type == SFS_INTEGER)
     {
-    	printf("%d",o->this.integer);
+	if (o->this.integer==inf || o->this.integer==-inf)
+	{
+		if (o->this.integer==inf)
+		{
+			printf("+inf");
+		}
+		if (o->this.integer==-inf)
+		{
+			printf("-inf");
+		}
+	}
+	else
+	{
+    		printf("%d",o->this.integer);
+	}
     }
 
     if (o->type == SFS_CHARACTER)
@@ -63,8 +76,6 @@ void sfs_print_atom( object o ) {
 	{
 		printf("#f");
 	}
-    
-   
     }
     return;
 }

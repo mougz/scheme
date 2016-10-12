@@ -16,6 +16,9 @@ extern "C" {
 #endif
 
 #include "number.h"
+#include <stdlib.h>
+#include <limits.h>
+#include <errno.h>
 
 typedef struct object_t {
 
@@ -46,11 +49,12 @@ object make_character(char caractere);
 object make_string(string str);
 object make_integer(int number);
 object make_bool(void);
-object make_symbol( string chaine );
-object make_pair ( object car , object cdr);
-object car (object o);
-object cdr ( object o);
+object make_pair(object car,object cdr);
+object make_symbol( string str );
+object make_inf(void);
 
+object cdr(object o);
+object car(object o);
 
 #define SFS_INTEGER      0x00
 #define SFS_CHARACTER    0x01
@@ -64,6 +68,8 @@ object cdr ( object o);
 extern object nil;
 extern object vrai;
 extern object faux;
+extern int inf;
+
 
 #ifdef __cplusplus
 }

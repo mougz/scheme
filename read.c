@@ -290,10 +290,19 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 
 object sfs_read( char *input, uint *here ) {
 
+    while ((input[(*here)]==' ' || input[*here]=='\t') && input[(*here)]!='\0') {
+	(*here)++;
+    }
+
     if ( input[*here] == '(' ) {
+
+	while ((input[(*here)+1]==' ' || input[(*here)+1]=='\t') && input[(*here)+1]!='\0') {
+		(*here)++;
+    	}
+
         if ( input[(*here)+1] == ')' ) {
             *here += 2;
-	     return nil;
+            return nil;
         }
         else {
             (*here)++;
@@ -311,11 +320,11 @@ object sfs_read_atom( char *input, uint *here ) {
     uint step=*here;
     int signe=0;
 
-    while ((input[step]==' ' && input[step]!='\0') || (input[step] == '\t' && input[step] != '\0')) 
-    {
+    while ((input[step]==' ' || input[step]=='\t' )&& input[step]!='\0') {
         step++;
 	(*here)++;
     }
+
 
     switch (input[step]) {
     case '#':
@@ -330,19 +339,19 @@ object sfs_read_atom( char *input, uint *here ) {
             }
             else
             {
-                if (isspace(input[step+3]) || input[step+3]=='\0' || input[step+3]=='\n' || input[step+3]==' ' || &input[step+3]==NULL)
+                if (isspace(input[step+3]) || input[step+3]=='\0' || input[step+3]=='\n' || input[step+3]==' ' || input[step+3]=='\t')
                 {
                     atom=make_character(input[step+2]);
 		    compteur+=1;
 		    *here+=3;
                 }
-                if (input[step+2]=='s' && input[step+3]=='p' && input[step+4]=='a' && input[step+5]=='c' && input[step+6]=='e' && (isspace(input[step+7])|| input[step+7]=='\0' ))
+                if (input[step+2]=='s' && input[step+3]=='p' && input[step+4]=='a' && input[step+5]=='c' && input[step+6]=='e' && (isspace(input[step+7])|| input[step+7]=='\0' || input[step+7]=='\t' ))
                 {
                     atom=make_character(' ');
 		    compteur+=1;
 		    *here+=7;
                 }
-                if (input[step+2]=='n' && input[step+3]=='e' && input[step+4]=='w' && input[step+5]=='l' && input[step+6]=='i' && input[step+7]=='n' && input[step+8]=='e' && (isspace(input[step+9]) || input[step+9]=='\0' ))
+                if (input[step+2]=='n' && input[step+3]=='e' && input[step+4]=='w' && input[step+5]=='l' && input[step+6]=='i' && input[step+7]=='n' && input[step+8]=='e' && (isspace(input[step+9]) || input[step+9]=='\0'|| input[step+9]=='\t' ))
                 {
                     atom=make_character('\n');
 		    compteur+=1;
@@ -356,34 +365,30 @@ object sfs_read_atom( char *input, uint *here ) {
                     WARNING_MSG("Not valid character");
                     return NULL;
                 }
-
             }
         }
-        if (input[step+1]=='t' || input[step+1] == 'f') 
-	  {
-            if (isspace(input[step+2]) || input[step+2]=='\0' ||input[(*here)+1]==')'||input[(*here)+1]=='(')
-		 {
-                 	atom=vrai;
-		 	*here+=2;
-             	 }
+        if (input[step+1]=='t') {
+            if (isspace(input[step+2]) || input[step+2]=='\0' || input[step+2]==')' || input[step+2]=='(' || input[step+2]=='\t') {
+                atom=vrai;
+		*here+=2;
+            }
             else {
                 WARNING_MSG("Not valid atom");
                 return NULL;
-                 }
-           }
+            }
+        }
         if (input[step+1]=='f')
-           {
-             if (isspace(input[step+2]) || input[step+2]=='\0' )
-            	{
-                	atom=faux;
-			*here+=2;
-                }
-             else 
-		{
+        {
+            if (isspace(input[step+2]) || input[step+2]=='\0'|| input[step+2]==')' || input[step+2]=='('|| input[step+2]=='\t' )
+            {
+                atom=faux;
+		*here+=2;
+            }
+            else {
                 WARNING_MSG("Not valid atom");
                 return NULL;
-                }
-           }
+            }
+        }
         break;
     }
     case '+':
@@ -394,7 +399,7 @@ object sfs_read_atom( char *input, uint *here ) {
 		goto NUM;
 	}
 	else
-	{       DEBUG_MSG("default");
+	{
 		goto SINON;
 	}
     break;
@@ -405,10 +410,11 @@ object sfs_read_atom( char *input, uint *here ) {
 	{	
 		step++;
 		signe=1;
+		(*here)++;
 		goto NUM;
 	}
 	else
-	{       DEBUG_MSG("default");
+	{
 		goto SINON;
 	}
     }
@@ -431,19 +437,24 @@ NUM:
 
         int number;
         char* pend;
+	errno=0;
         number=strtol(&input[step],&pend,0);
-	if ( *pend != 0 && *pend!=32 && *pend!=41)
+	if (errno==ERANGE)
+	{
+		number=inf;
+	}
+	if (*pend!=0 && *pend!=32 && *pend!=41 &&*pend!=9 && *pend!=40 && *pend!=34)
 	{
 		WARNING_MSG("Not valid number");
 	  	return NULL;
 	}
+
   	if (signe==1)
 	{
 		number=-number;
-		(*here)++;
 	}
         atom=make_integer(number);
-	(*here)+=pend-&input[step];
+	*here+=pend-&input[step];
     }
     break;
 
@@ -452,40 +463,36 @@ NUM:
 	int k=0;
 	int i;
 	int length=lengthstring(input+(*here)+1);
-	/*printf("%d",length);*/
 	char     str[BIGSTRING]="";
 	char chaine[BIGSTRING]="";
 	for (i=0;i<=length;i++)
 	{
 		chaine[i]=input[i+1+(*here)];
 	}
-	/*printf("%s",chaine);*/
 	extraire_chaine(chaine,str,k,length,here);
 	atom=make_string(str);
 	*here+=strlen(str)+2;
     }
     break;
 
-/* SYMBOLE */
-   
-SINON:
     default :
-	      { DEBUG_MSG("symbol %s",input);
-                int i=1;
-                string str = "";
-                str[0]=input[*here];
-                while (input[(*here)+i] != '\0'&& !isspace(input[(*here)+i])&& input[(*here)+i]!=')')
-               	 	{
-                    	   str[i]=input[(*here)+i];
-                   	   i++;
-                	}
-                atom = make_symbol(str);
-                (*here)+=i;
-                return atom;
-	       }
-	}
-	       
- 
+SINON:
+    { 
+        int i=1;
+        string str = "";
+        str[0]=input[*here];
+        while (input[(*here)+i] != '\0'&& !isspace(input[(*here)+i])&& input[(*here)+i]!=')' && input[(*here)+i]!='\t')
+        {
+                str[i]=input[(*here)+i];
+                i++;
+        }
+        atom = make_symbol(str);
+        (*here)+=i;
+    }
+    break;
+
+    }
+    
     return atom;
 }
 
@@ -497,14 +504,14 @@ object sfs_read_pair( char *stream, uint *here ) {
 
     object o_pair=make_object(SFS_PAIR);
 
-    while (stream[*here]==' ')
+    while (stream[*here]==' ' || stream[*here]=='\t')
     {
     	(*here)++;
     }
 
     o_pair->this.pair.car=sfs_read(stream,here);
 
-    while (stream[*here]==' ')
+    while (stream[*here]==' ' || stream[*here]=='\t')
     {
     	(*here)++;
     }
@@ -562,6 +569,8 @@ char * extraire_chaine(char * chaine, char* str,int k,int length,uint *here)
 			longueur=p-chaine-1;
 			strncat(str,chaine,longueur);
 			k+=longueur;
+			str[k]='\\';
+			k++;
 			str[k]='"';
 			p=NULL;
 			extraire_chaine(chaine+longueur+2,str,k,length-longueur-2,here);
@@ -592,7 +601,7 @@ int lengthstring(char * chaine){
 		}
 	}
 	return n;
- }
+}
 
 
 
