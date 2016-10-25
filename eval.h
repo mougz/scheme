@@ -18,7 +18,7 @@ extern "C" {
 
 #include "object.h"
 
-object sfs_eval( object );
+object sfs_eval( object input);
 
 object caar (object o);
 object cadr (object o);
@@ -27,7 +27,7 @@ object cddr (object o);
 object caddr (object o);
 object cdddr (object o);
 
-void set_car(object o, object p);
+
 
 int isquote (object o);
 int isdefine (object o);

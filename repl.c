@@ -29,7 +29,8 @@ void usage_error( char *command ) {
     fprintf( stderr, "Usage: %s [file.scm]\n   If no file is given, executes in Shell mode.\n", command );
 }
 
-
+object list_env;
+object top_level_env;
 object nil;
 object vrai;
 object faux;
@@ -41,6 +42,9 @@ void init_interpreter ( void ) {
     vrai=make_bool();
     faux=make_bool();
     inf=make_inf();
+    top_level_env=make_new_env();
+    list_env=make_new_list_env();
+    list_env=make_pair(top_level_env,nil);
 }
 
 int main ( int argc, char *argv[] ) {
@@ -153,10 +157,10 @@ int main ( int argc, char *argv[] ) {
         }
 
         printf( "==> " );
-	if (output->type==SFS_PAIR)
-    	{
-        	printf("(");
-    	}
+        if (output->type==SFS_PAIR)
+        {
+            printf("(");
+        }
         sfs_print( output );
         printf( "\n" );
     }

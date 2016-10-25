@@ -11,17 +11,25 @@
 #include "eval.h"
 
 object sfs_eval( object input )
-{
+{  
     /* OBJET AUTOEVALUANT */
     if ( input-> type != SFS_PAIR && input-> type != SFS_SYMBOL)
-    {
+    {   
         return input;
     }
 
     /* SYMBOLE */
-    if ( input->type == SFS_SYMBOL)
+    if (input->type == SFS_SYMBOL)
     {
-        return input; /* A MODIFIER */
+        if(get_variable_value_list_env(list_env, input) == NULL)
+        {
+            return input;
+        }
+
+
+        return retourner_valeur_symbole_env(input,envt_courant(list_env));
+	
+
     }
 
     /* LISTE */
@@ -35,17 +43,53 @@ object sfs_eval( object input )
             }
             return cadr(input);
         }
-
         /* define */
         if ( isdefine(car(input)) == 0 )
         {
-            return input ;  /* A MODIFIER */
+            if (cdr(input)->type==SFS_NIL || cddr(input)->type==SFS_NIL || cdddr(input) != nil)
+            {
+                ERROR_MSG("Not a valid form !");
+            }
+	    
+	    if (is_reserved(symb->this.symbol)==1)
+            {
+            	WARNING_MSG("Symbol used is reserved to scheme");
+            	return NULL;
+            }
+
+
+            object symbole = cadr(input);
+            object val = sfs_eval(caddr(input));
+
+            ajouter_variable(&list_env,symbole,val);
+            return symbole ;
         }
 
-        /* set */
+        /* set! */
         if ( is_set(car(input)) == 0 )
         {
-            return input ;  /* A MODIFIER */
+            if (cdr(input)->type==SFS_NIL || cddr(input)->type==SFS_NIL || cdddr(input) != nil)
+            {
+                WARNING_MSG("Not a valid form !");
+            }
+
+            if (get_variable_value_list_env(list_env, input) == NULL)
+            {
+                WARNING_MSG (" Undefined variable !");
+            }
+
+	    if (is_reserved(symb->this.symbol)==1)
+            {
+            	WARNING_MSG("Symbol used is reserved to scheme");
+            	return NULL;
+            }
+
+            object symbole = cadr(input);
+            object val = caddr(input);
+	    object 
+
+            ajouter_variable(&list_env,symbole,val);
+            return symbole ;
         }
 
         /* and */
@@ -110,6 +154,7 @@ object sfs_eval( object input )
         }
 
     }
+	return input;
 }
 
 
@@ -173,17 +218,7 @@ object cdddr (object o)
     return cddr(o)->this.pair.cdr;
 }
 
-/* @fn : void set_car(object o, object p)
-   @brief : initialise le car de la paire p avec o
-   @pre: p doit être une paire   */
 
-void set_car(object o, object p)
-{   if ( p->type !=SFS_PAIR)
-    {
-        ERROR_MSG("Not a pair !");
-    }
-    p->this.pair.car = o ;
-}
 
 /* @fn : int isquote (object o)
    @brief : verifie que o est "quote" et retourne 0 si c'est le cas, 1 sinon.
@@ -191,7 +226,11 @@ void set_car(object o, object p)
 int isquote (object o)
 {   if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
+    }
+    if ( o->type == SFS_NIL )
+    {
+        ERROR_MSG("Nil !");
     }
     if (strcmp(o->this.symbol,"quote") == 0)
     {
@@ -207,9 +246,10 @@ int isquote (object o)
    @pre: o doit être un symbole  */
 
 int isdefine (object o)
-{   if ( o->type != SFS_SYMBOL )
+{      
+    if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
     }
     if (strcmp(o->this.symbol,"define") == 0)
     {
@@ -227,9 +267,9 @@ int isdefine (object o)
 int is_set (object o)
 {   if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
     }
-    if (strcmp(o->this.symbol,"set") == 0)
+    if (strcmp(o->this.symbol,"set!") == 0)
     {
         return 0;
     }
@@ -244,7 +284,7 @@ int is_set (object o)
 int is_if (object o)
 {   if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
     }
     if (strcmp(o->this.symbol,"if") == 0)
     {
@@ -260,7 +300,7 @@ int is_if (object o)
 int is_and (object o)
 {   if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
     }
     if (strcmp(o->this.symbol,"and") == 0)
     {
@@ -275,9 +315,10 @@ int is_and (object o)
 
 int is_or (object o)
 {
+
     if ( o->type != SFS_SYMBOL )
     {
-        ERROR_MSG("Not a symbol !");
+        WARNING_MSG("Not a symbol !");
     }
     if (strcmp(o->this.symbol,"or") == 0)
     {
@@ -287,6 +328,41 @@ int is_or (object o)
 }
 
 
+/*
+ @fn int is_reserved(string word)
+ 
+ @brief renvoie 1 si word est un mot reservé du scheme(forme, primitives,..), 0 sinon.
+
+A completer dans l'increment 3
+ */
+
+
+int is_reserved(string word)
+{
+    if (strcmp(word,"define")==0)
+        return 1;
+    if (strcmp(word,"if")==0)
+        return 1;
+    if (strcmp(word,"and")==0)
+        return 1;
+    if (strcmp(word,"or")==0)
+        return 1;
+    if (strcmp(word,"cons")==0)
+        return 1;
+    if (strcmp(word,"car")==0)
+        return 1;
+    if (strcmp(word,"cdr")==0)
+        return 1;
+    if (strcmp(word,"+")==0)
+        return 1;
+    if (strcmp(word,"-")==0)
+        return 1;
+    if (strcmp(word,"*")==0)
+        return 1;
+    if (strcmp(word,"/")==0)
+        return 1;
+    else
+        return FALSE;
 
 
 

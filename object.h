@@ -55,6 +55,19 @@ object make_inf(void);
 
 object cdr(object o);
 object car(object o);
+void set_car(object o, object p);
+
+object make_new_env(void);
+object make_new_list_env(void);
+object get_variable_value_env(object env, object symbole);
+object get_variable_value_list_env(object list_env, object symbole);
+
+void ajouter_env(object env, object* list_env);
+void enlever_env(object* list_env);
+void ajouter_variable(object* env,object symbole,object valeur);
+object retourner_valeur_symbole_env(object symbole,object env);
+object retourner_valeur_symbole_list_env(object symbole,object list_env);
+object envt_courant (object list_env);
 
 #define SFS_INTEGER      0x00
 #define SFS_CHARACTER    0x01
@@ -69,6 +82,8 @@ extern object nil;
 extern object vrai;
 extern object faux;
 extern int inf;
+extern object list_env;
+extern object top_level_env;
 
 
 #ifdef __cplusplus

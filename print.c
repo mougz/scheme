@@ -15,67 +15,66 @@
 void sfs_print_atom( object o ) {
     if (o->type==SFS_NIL)
     {
-	printf("()");
+        printf("()");
     }
-
     if ( o->type == SFS_SYMBOL)
-    {       
-	 printf( "%s", o->this.symbol );
+    {
+        printf( "%s", o->this.symbol );
     }
 
     if (o->type == SFS_INTEGER)
     {
-	if (o->this.integer==inf || o->this.integer==-inf)
-	{
-		if (o->this.integer==inf)
-		{
-			printf("+inf");
-		}
-		if (o->this.integer==-inf)
-		{
-			printf("-inf");
-		}
-	}
-	else
-	{
-    		printf("%d",o->this.integer);
-	}
+        if (o->this.integer==inf || o->this.integer==-inf)
+        {
+            if (o->this.integer==inf)
+            {
+                printf("+inf");
+            }
+            if (o->this.integer==-inf)
+            {
+                printf("-inf");
+            }
+        }
+        else
+        {
+            printf("%d",o->this.integer);
+        }
     }
 
     if (o->type == SFS_CHARACTER)
     {
-    switch (o->this.character)
-    {	
-    
-    case '\n':
-	printf("#\\newline");
-	break;
-    
-    case ' ':
-	printf("#\\space");
-	break;
+        switch (o->this.character)
+        {
 
-    default :  	
-	printf("#\\%c",o->this.character);
-	break;
-    }
+        case '\n':
+            printf("#\\newline");
+            break;
+
+        case ' ':
+            printf("#\\space");
+            break;
+
+        default :
+            printf("#\\%c",o->this.character);
+            break;
+        }
     }
 
     if (o->type == SFS_STRING)
     {
-    	printf("\"%s\"",o->this.string);
+        printf("\"%s\"",o->this.string);
     }
 
     if (o->type == SFS_BOOLEAN)
     {
-	if (o->this.special==vrai)
-	{
-		printf("#t");
-	}
-	if (o->this.special==faux)
-	{
-		printf("#f");
-	}
+        if (o->this.special==vrai)
+        {
+            printf("#t");
+        }
+        if (o->this.special==faux)
+        {
+            printf("#f");
+        }
     }
     return;
 }
@@ -98,7 +97,7 @@ void sfs_print_pair( object o ) {
             printf(")");
         }
     }
-    
+
     else
     {
         if (o->this.pair.cdr->type!=SFS_PAIR)
@@ -108,18 +107,20 @@ void sfs_print_pair( object o ) {
         }
         else
         {
+	    if (o->this.pair.car->type==SFS_INTEGER){ERROR_MSG("ici");}
+		printf("coucou");
             sfs_print(o->this.pair.car);
             printf(" ");
             sfs_print(o->this.pair.cdr);
         }
     }
-	
+
     return;
 }
 
 
 void sfs_print( object o ) {
-    
+
     if ( SFS_PAIR == o->type ) {
         sfs_print_pair( o );
     }
