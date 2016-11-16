@@ -9,6 +9,8 @@
  */
 
 #include "eval.h"
+#include "environnement.h"
+#include "list.h"
 
 object sfs_eval( object input )
 {  
@@ -33,13 +35,24 @@ object sfs_eval( object input )
     }
 
     /* LISTE */
-    if ( input->type == SFS_PAIR)
-    {   /* quote */
+    if(input->type == SFS_PAIR)
+    {
+	return sfs_eval_pair(input);
+    }
+} 
+  
+
+
+object sfs_eval_pair(object input)
+{
+
+/* quote */
+	
         if ( isquote(car(input)) == 0 )
         {
             if ( cddr(input) != nil)
             {
-                ERROR_MSG("Not a valid quote !");
+               WARNING_MSG("Quote takes 1 argument !");
             }
             return cadr(input);
         }
@@ -48,10 +61,10 @@ object sfs_eval( object input )
         {
             if (cdr(input)->type==SFS_NIL || cddr(input)->type==SFS_NIL || cdddr(input) != nil)
             {
-                ERROR_MSG("Not a valid form !");
+               WARNING_MSG("define takes 2 arguments!");
             }
 	    
-	    if (is_reserved(symb->this.symbol)==1)
+	    if (is_reserved(cadr(input)->this.symbol)==1)
             {
             	WARNING_MSG("Symbol used is reserved to scheme");
             	return NULL;
@@ -70,25 +83,35 @@ object sfs_eval( object input )
         {
             if (cdr(input)->type==SFS_NIL || cddr(input)->type==SFS_NIL || cdddr(input) != nil)
             {
-                WARNING_MSG("Not a valid form !");
+                WARNING_MSG("Set takes 2 arguments !");
+		return NULL;
             }
 
-            if (get_variable_value_list_env(list_env, input) == NULL)
+            if (get_variable_value_list_env(list_env, cadr(input)) == NULL)
             {
                 WARNING_MSG (" Undefined variable !");
+		return nil;
             }
 
-	    if (is_reserved(symb->this.symbol)==1)
+	    if (is_reserved(cadr(input)->this.symbol)==1)
             {
             	WARNING_MSG("Symbol used is reserved to scheme");
             	return NULL;
             }
 
             object symbole = cadr(input);
-            object val = caddr(input);
-	    object 
+            object new_val = caddr(input);
+	    object couple_actuel = get_variable_value_list_env(list_env, cadr(input));
 
-            ajouter_variable(&list_env,symbole,val);
+            object old_val = cdr(couple_actuel);
+            memcpy(old_val,cdr(couple_actuel),sizeof(*old_val));
+            
+            memcpy(cdr(couple_actuel),new_val,sizeof(*new_val));
+           
+            return symbole;
+
+
+            
             return symbole ;
         }
 
@@ -152,70 +175,15 @@ object sfs_eval( object input )
 
 
         }
-
-    }
-	return input;
-}
-
-
-
-
-
-/* @fn : object caar (object o)
-   @brief : renvoie le car du car de l'object o
-   @pre: le car de o doit être une paire    */
-
-object caar (object o)
-{
-    return car(o)->this.pair.car; /* le prerequis est vérifié par la fonction car */
-}
-
-
-/* @fn : object cadr (object o)
-   @brief : renvoie le car du cdr de l'object o
-   @pre: le cdr de o doit être une paire    */
-
-object cadr (object o)
-{
-    return cdr(o)->this.pair.car;
-}
-
-
-/* @fn : object cdar(object o)
-   @brief : renvoie le cdr du car de l'object o
-   @pre: le car de o doit être une paire    */
-
-object cdar (object o)
-{
-    return car(o)->this.pair.cdr;
-}
-
-
-/* @fn : object cddr(object o)
-   @brief : renvoie le cdr du cdr de l'object o
-   @pre: le cdr de o doit être une paire    */
-
-object cddr(object o)
-{
-    return cdr(o)->this.pair.cdr;
-}
-
-/* @fn : object caddr(object o)
-   @brief : renvoie le car du cdr du cdr de l'object o
-   @pre: le cdr du cdr de o doit être une paire    */
-
-object caddr (object o)
-{
-    return cddr(o)->this.pair.car;
-}
-
-/* @fn : object cdddr(object o)
-   @brief : renvoie le cdr du cdr du cdr de l'object o
-   @pre: le cdr du cdr de o doit être une paire    */
-
-object cdddr (object o)
-{
-    return cddr(o)->this.pair.cdr;
+	object res_car=sfs_eval(car(input));
+	if (cdr(input)!=nil)
+	{
+		return make_pair(res_car,sfs_eval(cdr(input)));
+	}
+	else
+	{
+		return make_pair(res_car,sfs_eval(cadr(input)));
+	}
 }
 
 
@@ -224,10 +192,10 @@ object cdddr (object o)
    @brief : verifie que o est "quote" et retourne 0 si c'est le cas, 1 sinon.
    @pre: o doit être un symbole  */
 int isquote (object o)
-{   if ( o->type != SFS_SYMBOL )
+{  /* if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if ( o->type == SFS_NIL )
     {
         ERROR_MSG("Nil !");
@@ -247,10 +215,10 @@ int isquote (object o)
 
 int isdefine (object o)
 {      
-    if ( o->type != SFS_SYMBOL )
+   /* if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if (strcmp(o->this.symbol,"define") == 0)
     {
         return 0;
@@ -265,10 +233,10 @@ int isdefine (object o)
    @pre: o doit être un symbole  */
 
 int is_set (object o)
-{   if ( o->type != SFS_SYMBOL )
+{  /* if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if (strcmp(o->this.symbol,"set!") == 0)
     {
         return 0;
@@ -282,10 +250,10 @@ int is_set (object o)
    @pre: o doit être un symbole  */
 
 int is_if (object o)
-{   if ( o->type != SFS_SYMBOL )
+{  /* if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if (strcmp(o->this.symbol,"if") == 0)
     {
         return 0;
@@ -298,10 +266,10 @@ int is_if (object o)
    @pre: o doit être un symbole  */
 
 int is_and (object o)
-{   if ( o->type != SFS_SYMBOL )
+{  /* if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if (strcmp(o->this.symbol,"and") == 0)
     {
         return 0;
@@ -316,10 +284,10 @@ int is_and (object o)
 int is_or (object o)
 {
 
-    if ( o->type != SFS_SYMBOL )
+ /*   if ( o->type != SFS_SYMBOL )
     {
         WARNING_MSG("Not a symbol !");
-    }
+    }*/
     if (strcmp(o->this.symbol,"or") == 0)
     {
         return 0;
@@ -347,8 +315,6 @@ int is_reserved(string word)
         return 1;
     if (strcmp(word,"or")==0)
         return 1;
-    if (strcmp(word,"cons")==0)
-        return 1;
     if (strcmp(word,"car")==0)
         return 1;
     if (strcmp(word,"cdr")==0)
@@ -362,7 +328,8 @@ int is_reserved(string word)
     if (strcmp(word,"/")==0)
         return 1;
     else
-        return FALSE;
+        return 0;
+}
 
 
 

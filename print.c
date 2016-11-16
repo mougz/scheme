@@ -17,6 +17,15 @@ void sfs_print_atom( object o ) {
     {
         printf("()");
     }
+    if (o->type==SFS_INTEGER_PINF)
+    {
+        printf("+inf");
+    }
+    if (o->type==SFS_INTEGER_MINF)
+    {
+        printf("-inf");
+    }
+
     if ( o->type == SFS_SYMBOL)
     {
         printf( "%s", o->this.symbol );
@@ -24,21 +33,8 @@ void sfs_print_atom( object o ) {
 
     if (o->type == SFS_INTEGER)
     {
-        if (o->this.integer==inf || o->this.integer==-inf)
-        {
-            if (o->this.integer==inf)
-            {
-                printf("+inf");
-            }
-            if (o->this.integer==-inf)
-            {
-                printf("-inf");
-            }
-        }
-        else
-        {
+       
             printf("%d",o->this.integer);
-        }
     }
 
     if (o->type == SFS_CHARACTER)
@@ -107,8 +103,6 @@ void sfs_print_pair( object o ) {
         }
         else
         {
-	    if (o->this.pair.car->type==SFS_INTEGER){ERROR_MSG("ici");}
-		printf("coucou");
             sfs_print(o->this.pair.car);
             printf(" ");
             sfs_print(o->this.pair.cdr);

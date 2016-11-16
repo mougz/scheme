@@ -18,15 +18,9 @@ extern "C" {
 
 #include "object.h"
 
+
 object sfs_eval( object input);
-
-object caar (object o);
-object cadr (object o);
-object cdar (object o);
-object cddr (object o);
-object caddr (object o);
-object cdddr (object o);
-
+object sfs_eval_pair(object input);
 
 
 int isquote (object o);
@@ -36,6 +30,7 @@ int is_if (object o);
 int is_and (object o);
 int is_or (object o);
 
+int is_reserved(string word);
 
 
 

@@ -18,7 +18,9 @@
 #include "object.h"
 #include "read.h"
 #include "eval.h"
+#include "environnement.h"
 #include "print.h"
+
 
 /* mode d'interaction avec l'interpreteur (exemple)*/
 typedef enum {INTERACTIF,SCRIPT} inter_mode;
@@ -34,14 +36,15 @@ object top_level_env;
 object nil;
 object vrai;
 object faux;
-int inf;
-
+object plus_inf;
+object moins_inf;
 void init_interpreter ( void ) {
 
     nil      = make_nil();
     vrai=make_bool();
     faux=make_bool();
-    inf=make_inf();
+    plus_inf=make_plus_inf();
+    moins_inf= make_minus_inf();
     top_level_env=make_new_env();
     list_env=make_new_list_env();
     list_env=make_pair(top_level_env,nil);

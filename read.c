@@ -12,6 +12,7 @@
 #include <ctype.h>
 
 #include "read.h"
+#include "list.h"
 
 
 
@@ -460,9 +461,12 @@ NUM:
             char* pend;
             errno=0;
             number=strtol(&input[step],&pend,0);
-            if (errno==ERANGE)
-            {
-                number=inf;
+            if (errno == ERANGE)
+            {   if (signe == 1) 
+		{
+                	atom = make_minus_inf();
+		}
+		else {atom = make_plus_inf();}
             }
             if (*pend!=0 && *pend!=32 && *pend!=41 &&*pend!=9 && *pend!=40 && *pend!=34)
             {
@@ -470,7 +474,7 @@ NUM:
                 return NULL;
             }
 
-            if (signe==1)
+            if (signe == 1)
             {
                 number=-number;
             }
@@ -529,12 +533,9 @@ object sfs_read_pair( char *stream, uint *here ) {
     {
         (*here)++;
     }
-    /*printf("%s",sfs_read(stream,here)->this.symbol);
-    exit(0);*/
+
     set_car(sfs_read(stream,here),o_pair);
-    /*printf("%d",o_pair->this.pair.car);*/
-    
-    /*if (o_pair->this.pair.car->type==SFS_INTEGER){ERROR_MSG("ici");}*/
+
     while (stream[*here]==' ' || stream[*here]=='\t')
     {
         (*here)++;
@@ -572,7 +573,6 @@ char * extraire_chaine(char * chaine, char* str,int k,int length,uint *here)
         q=NULL;
     }
     p=strchr(chaine,'"');
-    /*printf("%d\n",p-chaine);*/
     if (p==NULL)
     {
         WARNING_MSG("Not valid string2");
@@ -614,7 +614,7 @@ int lengthstring(char * chaine) {
             while (m<strlen(chaine)) {
                 if (chaine[m+1]=='"' && isspace(chaine[m+2]) )
                 {
-                    ERROR_MSG("Not valid string1");
+                    WARNING_MSG("Not valid string1");
                 }
                 m++;
             }
