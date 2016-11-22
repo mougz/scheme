@@ -1,6 +1,6 @@
 
 /**
- * @file list.h
+ * @file environnement.c
  * @author Hugo Jallet
  * @date 16/11/16
  * @brief  Fonctions de gestion pour les environnements

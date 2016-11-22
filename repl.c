@@ -20,6 +20,7 @@
 #include "eval.h"
 #include "environnement.h"
 #include "print.h"
+#include "primitive.h"
 
 
 /* mode d'interaction avec l'interpreteur (exemple)*/
@@ -48,6 +49,7 @@ void init_interpreter ( void ) {
     top_level_env=make_new_env();
     list_env=make_new_list_env();
     list_env=make_pair(top_level_env,nil);
+    init_primitive(top_level_env);
 }
 
 int main ( int argc, char *argv[] ) {
