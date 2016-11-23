@@ -79,14 +79,14 @@ object make_plus_inf(void) {
     return t;
 }
 
-object make_minus_inf(void) 
+object make_minus_inf(void)
 {
     object t=make_object(SFS_INTEGER_MINF);
     t->this.special=t;
     return t;
 }
 
-object make_primitive(Primitive p) 
+object make_primitive(Primitive p)
 {   object t = make_object(SFS_PRIMITIVE);
     t->this.primitive = p;
     return t;

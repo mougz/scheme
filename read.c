@@ -462,11 +462,13 @@ NUM:
             errno=0;
             number=strtol(&input[step],&pend,0);
             if (errno == ERANGE)
-            {   if (signe == 1) 
-		{
-                	atom = make_minus_inf();
-		}
-		else {atom = make_plus_inf();}
+            {   if (signe == 1)
+                {
+                    atom = make_minus_inf();
+                }
+                else {
+                    atom = make_plus_inf();
+                }
             }
             if (*pend!=0 && *pend!=32 && *pend!=41 &&*pend!=9 && *pend!=40 && *pend!=34)
             {

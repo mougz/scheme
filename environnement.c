@@ -55,12 +55,12 @@ object get_variable_value_env(object env, object symbole) {
     }
 }
 
-object get_variable_value_list_env(object list_env, object symbole) 
+object get_variable_value_list_env(object list_env, object symbole)
 {
-    
+
     if (list_env->type != SFS_NIL)
     {
-	
+
         if (get_variable_value_env(car(list_env),symbole) != NULL)
         {
             return get_variable_value_env(car(list_env),symbole);
@@ -75,25 +75,25 @@ object get_variable_value_list_env(object list_env, object symbole)
         return NULL;
     }
 }
-void enlever_env(object* list_env){
+void enlever_env(object* list_env) {
     object list_env_temp = cdr(*list_env);
     *list_env = list_env_temp;
     return;
 }
 
-void ajouter_env(object env, object* list_env){
+void ajouter_env(object env, object* list_env) {
     object list_env_temp=make_pair(env,*list_env);
     *list_env = list_env_temp;
     return;
 }
 
 void ajouter_variable(object* list_env,object symbole,object valeur) {
-        object variable=make_pair(symbole,valeur);
-	object env_courant=car(*list_env);
-    	object env_temp=make_pair(variable,env_courant);
-    	enlever_env(list_env);
-    	ajouter_env(env_temp,list_env);
-    	return;
+    object variable=make_pair(symbole,valeur);
+    object env_courant=car(*list_env);
+    object env_temp=make_pair(variable,env_courant);
+    enlever_env(list_env);
+    ajouter_env(env_temp,list_env);
+    return;
 }
 
 object retourner_valeur_symbole_env(object symbole,object env) {

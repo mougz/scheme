@@ -33,8 +33,8 @@ void sfs_print_atom( object o ) {
 
     if (o->type == SFS_INTEGER)
     {
-       
-            printf("%d",o->this.integer);
+
+        printf("%d",o->this.integer);
     }
 
     if (o->type == SFS_CHARACTER)
