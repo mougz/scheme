@@ -33,23 +33,24 @@ void usage_error( char *command ) {
 }
 
 object list_env;
-object top_level_env;
 object nil;
 object vrai;
 object faux;
 object plus_inf;
 object moins_inf;
+
 void init_interpreter ( void ) {
 
-    nil      = make_nil();
+    nil = make_nil();
     vrai=make_bool();
     faux=make_bool();
     plus_inf=make_plus_inf();
     moins_inf= make_minus_inf();
-    top_level_env=make_new_env();
-    list_env=make_new_list_env();
-    list_env=make_pair(top_level_env,nil);
-    /*init_primitive(top_level_env);*/
+    list_env = make_new_env();
+    ajouter_env(make_new_env(),&list_env);
+    init_primitive();
+
+
 }
 
 int main ( int argc, char *argv[] ) {
@@ -162,10 +163,6 @@ int main ( int argc, char *argv[] ) {
         }
 
         printf( "==> " );
-        if (output->type==SFS_PAIR)
-        {
-            printf("(");
-        }
         sfs_print( output );
         printf( "\n" );
     }

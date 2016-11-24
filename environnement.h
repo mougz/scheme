@@ -26,6 +26,7 @@ void ajouter_variable(object* env,object symbole,object valeur);
 object retourner_valeur_symbole_env(object symbole,object env);
 object retourner_valeur_symbole_list_env(object symbole,object list_env);
 object envt_courant (object list_env);
+void add_binding_to_list_env(object binding, object* list_env);
 
 
 #ifdef __cplusplus

@@ -1,4 +1,3 @@
-
 /**
  * @file read.c
  * @author François Cayre <cayre@yiking.(null)>
@@ -12,7 +11,7 @@
 #include <ctype.h>
 
 #include "read.h"
-#include "list.h"
+#include"list.h"
 
 
 
@@ -361,19 +360,19 @@ object sfs_read_atom( char *input, uint *here ) {
             }
             else
             {
-                if (isspace(input[step+3]) || input[step+3]=='\0' || input[step+3]=='\n' || input[step+3]==' ' || input[step+3]=='\t')
+                if (isspace(input[step+3]) || input[step+3]=='\0' || input[step+3]=='\n' || input[step+3]==' ' || input[step+3]=='\t' || input[step+3]==')')
                 {
                     atom=make_character(input[step+2]);
                     compteur+=1;
                     *here+=3;
                 }
-                if (input[step+2]=='s' && input[step+3]=='p' && input[step+4]=='a' && input[step+5]=='c' && input[step+6]=='e' && (isspace(input[step+7])|| input[step+7]=='\0' || input[step+7]=='\t' ))
+                if (input[step+2]=='s' && input[step+3]=='p' && input[step+4]=='a' && input[step+5]=='c' && input[step+6]=='e' && (isspace(input[step+7])|| input[step+7]=='\0' || input[step+7]=='\t' || input[step+7]==')'))
                 {
                     atom=make_character(' ');
                     compteur+=1;
                     *here+=7;
                 }
-                if (input[step+2]=='n' && input[step+3]=='e' && input[step+4]=='w' && input[step+5]=='l' && input[step+6]=='i' && input[step+7]=='n' && input[step+8]=='e' && (isspace(input[step+9]) || input[step+9]=='\0'|| input[step+9]=='\t' ))
+                if (input[step+2]=='n' && input[step+3]=='e' && input[step+4]=='w' && input[step+5]=='l' && input[step+6]=='i' && input[step+7]=='n' && input[step+8]=='e' && (isspace(input[step+9]) || input[step+9]=='\0'|| input[step+9]=='\t'|| input[step+9]==')' ))
                 {
                     atom=make_character('\n');
                     compteur+=1;
@@ -462,13 +461,11 @@ NUM:
             errno=0;
             number=strtol(&input[step],&pend,0);
             if (errno == ERANGE)
-            {   if (signe == 1)
-                {
-                    atom = make_minus_inf();
-                }
-                else {
-                    atom = make_plus_inf();
-                }
+            {   if (signe == 1) 
+		{
+                	atom = make_minus_inf();
+		}
+		else {atom = make_plus_inf();}
             }
             if (*pend!=0 && *pend!=32 && *pend!=41 &&*pend!=9 && *pend!=40 && *pend!=34)
             {
@@ -487,18 +484,11 @@ NUM:
 
     case '"':
     {
-        int k=0;
-        int i;
-        int length=lengthstring(input+(*here)+1);
-        char     str[BIGSTRING]="";
-        char chaine[BIGSTRING]="";
-        for (i=0; i<=length; i++)
-        {
-            chaine[i]=input[i+1+(*here)];
-        }
-        extraire_chaine(chaine,str,k,length,here);
-        atom=make_string(str);
-        *here+=strlen(str)+2;
+	(*here)++;
+	char str[BIGSTRING]="";
+	atom=make_string(sfs_read_string(input+(*here),str,here));
+
+
     }
     break;
 
@@ -528,7 +518,6 @@ SINON:
 
 
 object sfs_read_pair( char *stream, uint *here ) {
-
     object o_pair=make_object(SFS_PAIR);
 
     while (stream[*here]==' ' || stream[*here]=='\t')
@@ -536,7 +525,13 @@ object sfs_read_pair( char *stream, uint *here ) {
         (*here)++;
     }
 
-    set_car(sfs_read(stream,here),o_pair);
+    object theCar = sfs_read(stream,here);
+    if(theCar == NULL) {
+	DEBUG_MSG("car invalide dans read pair");
+   	return NULL;
+    }
+
+    set_car(theCar,o_pair);
 
     while (stream[*here]==' ' || stream[*here]=='\t')
     {
@@ -550,7 +545,12 @@ object sfs_read_pair( char *stream, uint *here ) {
     }
     else
     {
-        o_pair->this.pair.cdr=sfs_read_pair(stream,here);
+        object theCdr = sfs_read_pair(stream,here);
+    	if(theCdr == NULL) {
+		DEBUG_MSG("car invalide dans read pair");
+   		return NULL;
+    	}
+	o_pair->this.pair.cdr=theCdr;
     }
     o_pair=make_pair(car(o_pair),cdr(o_pair));
 
@@ -646,7 +646,35 @@ object replacequote(char *input, uint *here)
     return o_pair;
 }
 
-
-
+char* sfs_read_string(char* input,char* str,uint * here){
+	int i=0;
+	int j=0;
+	while (input[i]!='"')
+	{
+		if (input[i]=='\\')
+		{
+			if (input[i+1]!='"')
+			{
+				ERROR_MSG("Not valid string!");
+			}
+			else
+			{
+				str[j]='"';
+				j++;
+				i+=2;
+				(*here)+=2;
+			}
+		}
+		else
+		{
+			str[j]=input[i];
+			(*here)++;
+			i++;
+			j++;
+		}
+	}
+	(*here)++;
+	return str;
+}
 
 

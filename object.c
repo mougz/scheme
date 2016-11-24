@@ -73,13 +73,14 @@ object make_symbol( string str )
     return t;
 }
 
+
 object make_plus_inf(void) {
     object t=make_object(SFS_INTEGER_PINF);
     t->this.special=t;
     return t;
 }
 
-object make_minus_inf(void)
+object make_minus_inf(void) 
 {
     object t=make_object(SFS_INTEGER_MINF);
     t->this.special=t;
@@ -91,9 +92,5 @@ object make_primitive(Primitive p)
     t->this.primitive = p;
     return t;
 }
-
-
-
-
 
 

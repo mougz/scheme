@@ -33,6 +33,7 @@ object sfs_read_pair( char *stream, uint *here);
 char * extraire_chaine(char * chaine, char* str,int k,int length,uint *here);
 int lengthstring(char * chaine);
 object replacequote(char *input, uint *here);
+char* sfs_read_string(char* input,char *str,uint* here);
 
 #ifdef __cplusplus
 }

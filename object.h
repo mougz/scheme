@@ -20,20 +20,6 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 
-
-#define SFS_INTEGER      0x00
-#define SFS_CHARACTER    0x01
-#define SFS_STRING       0x02
-#define SFS_PAIR         0x03
-#define SFS_NIL          0x04
-#define SFS_BOOLEAN      0x05
-#define SFS_SYMBOL       0x06
-#define SFS_PRIMITIVE    0x07
-
-#define SFS_INTEGER_PINF     0x08
-#define SFS_INTEGER_MINF     0x09
-
-
 typedef struct object_t {
 
     uint type;
@@ -51,14 +37,15 @@ typedef struct object_t {
         }                pair;
 
         struct object_t *special;
-        struct object_t *(*primitive)(struct object_t*);
+	struct object_t *(*primitive)(struct object_t*);
 
     } this;
 
 } *object;
 
-typedef object (*Primitive)(object);
 
+
+typedef object (*Primitive)(object);
 
 object make_object( uint type );
 object make_nil( void );
@@ -70,17 +57,27 @@ object make_pair(object car,object cdr);
 object make_symbol( string str );
 object make_plus_inf(void);
 object make_minus_inf(void);
+object make_primitive( Primitive p );
 
 
 
+#define SFS_INTEGER      0x00
+#define SFS_CHARACTER    0x01
+#define SFS_STRING       0x02
+#define SFS_PAIR         0x03
+#define SFS_NIL          0x04
+#define SFS_BOOLEAN      0x05
+#define SFS_SYMBOL       0x06
+#define SFS_PRIMITIVE    0x07
+
+#define SFS_INTEGER_PINF     0x08
+#define SFS_INTEGER_MINF     0x09
 
 extern object nil;
 extern object vrai;
 extern object faux;
-extern object inf;
 extern object list_env;
 extern object top_level_env;
-
 
 #ifdef __cplusplus
 }

@@ -7,9 +7,10 @@
  */
 
 #include "list.h"
+#include "object.h"
 
 object car(object o) {
-    if ( o->type !=SFS_PAIR)
+    if ( o->type != SFS_PAIR)
     {
         WARNING_MSG("Not a pair !");
     }
@@ -43,7 +44,7 @@ void set_car(object o, object p)
 
 object caar (object o)
 {
-    return car(o)->this.pair.car; /* le prerequis est vérifié par la fonction car */
+    return car(car(o)); /* le prerequis est vérifié par la fonction car */
 }
 
 
@@ -53,7 +54,7 @@ object caar (object o)
 
 object cadr (object o)
 {
-    return cdr(o)->this.pair.car;
+    return car(cdr(o));
 }
 
 
@@ -63,7 +64,7 @@ object cadr (object o)
 
 object cdar (object o)
 {
-    return car(o)->this.pair.cdr;
+    return cdr(car(o));
 }
 
 
@@ -73,7 +74,7 @@ object cdar (object o)
 
 object cddr(object o)
 {
-    return cdr(o)->this.pair.cdr;
+    return cdr(cdr(o));
 }
 
 /* @fn : object caddr(object o)
@@ -82,7 +83,7 @@ object cddr(object o)
 
 object caddr (object o)
 {
-    return cddr(o)->this.pair.car;
+    return car(cdr(cdr(o)));
 }
 
 /* @fn : object cdddr(object o)
@@ -91,7 +92,7 @@ object caddr (object o)
 
 object cdddr (object o)
 {
-    return cddr(o)->this.pair.cdr;
+    return cdr(cdr(cdr(o)));
 }
 
 

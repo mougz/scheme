@@ -9,6 +9,8 @@
  */
 
 #include "print.h"
+#include "list.h"
+#include "environnement.h"
 
 #include <stdio.h>
 
@@ -17,6 +19,7 @@ void sfs_print_atom( object o ) {
     {
         printf("()");
     }
+
     if (o->type==SFS_INTEGER_PINF)
     {
         printf("+inf");
@@ -33,9 +36,9 @@ void sfs_print_atom( object o ) {
 
     if (o->type == SFS_INTEGER)
     {
-
         printf("%d",o->this.integer);
     }
+ 
 
     if (o->type == SFS_CHARACTER)
     {
@@ -76,40 +79,9 @@ void sfs_print_atom( object o ) {
 }
 
 void sfs_print_pair( object o ) {
-
-    if ((o->this.pair.car->type==SFS_PAIR && o->this.pair.cdr==nil) || (o->this.pair.cdr->type==SFS_PAIR && o->this.pair.car->type==SFS_PAIR))
-    {
-        if (o->this.pair.cdr->type==SFS_PAIR && o->this.pair.car->type==SFS_PAIR)
-        {
-            printf("(");
-            sfs_print(o->this.pair.car);
-            printf(" ");
-            sfs_print(o->this.pair.cdr);
-        }
-        else
-        {
-            printf("(");
-            sfs_print(o->this.pair.car);
-            printf(")");
-        }
-    }
-
-    else
-    {
-        if (o->this.pair.cdr->type!=SFS_PAIR)
-        {
-            sfs_print(o->this.pair.car);
-            printf(")");
-        }
-        else
-        {
-            sfs_print(o->this.pair.car);
-            printf(" ");
-            sfs_print(o->this.pair.cdr);
-        }
-    }
-
-    return;
+    printf("(");
+    sfs_print_interieur(car(o),cdr(o));
+    printf(")");
 }
 
 
@@ -123,3 +95,21 @@ void sfs_print( object o ) {
     }
 
 }
+
+void sfs_print_interieur(object car,object cdr){
+	sfs_print(car);
+	if (cdr->type==SFS_NIL)
+	{
+		return;
+	}
+	printf(" ");
+	if (cdr->this.pair.cdr->type==SFS_NIL)
+	{
+		sfs_print(cdr->this.pair.car);
+	}
+	else
+	{
+		sfs_print_interieur(cdr->this.pair.car,cdr->this.pair.cdr);
+	}
+}
+

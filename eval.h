@@ -18,9 +18,9 @@ extern "C" {
 
 #include "object.h"
 
-
 object sfs_eval( object input);
 object sfs_eval_pair(object input);
+object sfs_eval_primitive(object input);
 
 
 int isquote (object o);

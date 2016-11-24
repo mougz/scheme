@@ -22,7 +22,7 @@ void sfs_print( object );
 
 void sfs_print_atom( object );
 void sfs_print_pair( object );
-
+void sfs_print_interieur(object car,object cdr);
 #ifdef __cplusplus
 }
 #endif

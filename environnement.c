@@ -127,3 +127,12 @@ object envt_courant (object list_env)
 {
     return car ( list_env);
 }
+
+void add_binding_to_list_env(object binding, object* list_env)
+{
+    object current_env=car(*list_env);
+    object env_temp = make_pair(binding, current_env);
+    enlever_env(list_env);
+    ajouter_env(env_temp,list_env);
+    return;
+}
